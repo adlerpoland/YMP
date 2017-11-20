@@ -55,7 +55,7 @@ namespace YourMusicPlayer
             //Wyczyszczenie listy plikow
             if (filePaths != null)
             {
-                playList.Items.Clear();
+                _files = new List<string>();
             }
             Debug.Print(path);
             //Wczytanie listy plikow
@@ -101,26 +101,42 @@ namespace YourMusicPlayer
 
         private void playBtn_Click(object sender, EventArgs e)
         {
-            playing = !playing;
+            Debug.Print(playList.SelectedIndex.ToString());
+            if (playList.SelectedIndex >= 0)
+            {
+                playing = !playing;
+                if (playing)
+                {
+                    playSound(false);
+                }
+                else
+                {
+                    playBtn.Text = "Play";
+                    outputDevice.Pause();
+                }
+            }
+        }
+
+        public void playSound(bool force)
+        {
             if (playing)
             {
+                if (force == true)
+                    outputDevice.Stop();
                 playBtn.Text = "Pause";
                 if (outputDevice == null)
                 {
                     outputDevice = new WaveOutEvent();
                     outputDevice.PlaybackStopped += OnPlaybackStopped;
                 }
-                if (audioFile == null)
+                if (audioFile == null || force == true)
                 {
-                    audioFile = new AudioFileReader(@"D:\Muzyka\Dokumenty\The Weeknd - Rockin.mp3");
+                    String filePath = filePaths[playList.SelectedIndex];
+                    //Debug.Print(filePath);
+                    audioFile = new AudioFileReader(filePath);
                     outputDevice.Init(audioFile);
                 }
                 outputDevice.Play();
-            }
-            else
-            {
-                playBtn.Text = "Play";
-                outputDevice.Pause();
             }
         }
 
@@ -137,6 +153,43 @@ namespace YourMusicPlayer
             playBtn.Text = "Play";
             playing = false;
             outputDevice?.Stop();
+        }
+
+        private void nextBtn_Click(object sender, EventArgs e)
+        {
+            int countFiles = _files.Count;
+            if (countFiles > 0)
+            {
+                if (playList.SelectedIndex >= 0)
+                {
+                    if(countFiles > playList.SelectedIndex + 1)
+                        playList.SelectedIndex++;
+                    else
+                        playList.SelectedIndex = 0;
+                }
+                else
+                {
+                    playList.SelectedIndex = 0;
+                }
+            }
+            //playSound(true);
+        }
+
+        private void prevBtn_Click(object sender, EventArgs e)
+        {
+            int countFiles = _files.Count;
+            if (countFiles > 0)
+            {
+                if (playList.SelectedIndex > 0)
+                {
+                    playList.SelectedIndex--;
+                }
+                else
+                {
+                    playList.SelectedIndex = countFiles-1;
+                }
+            }
+            //playSound(true);
         }
     }
 }
