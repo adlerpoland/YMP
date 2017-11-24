@@ -34,12 +34,13 @@
             this.playList = new System.Windows.Forms.ListBox();
             this.loadBtn = new System.Windows.Forms.Button();
             this.stopBtn = new System.Windows.Forms.Button();
+            this.playLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // prevBtn
             // 
             this.prevBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.prevBtn.Location = new System.Drawing.Point(12, 219);
+            this.prevBtn.Location = new System.Drawing.Point(12, 279);
             this.prevBtn.Name = "prevBtn";
             this.prevBtn.Size = new System.Drawing.Size(45, 30);
             this.prevBtn.TabIndex = 0;
@@ -50,7 +51,7 @@
             // nextBtn
             // 
             this.nextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.nextBtn.Location = new System.Drawing.Point(227, 219);
+            this.nextBtn.Location = new System.Drawing.Point(227, 279);
             this.nextBtn.Name = "nextBtn";
             this.nextBtn.Size = new System.Drawing.Size(45, 30);
             this.nextBtn.TabIndex = 1;
@@ -61,7 +62,7 @@
             // playBtn
             // 
             this.playBtn.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.playBtn.Location = new System.Drawing.Point(144, 219);
+            this.playBtn.Location = new System.Drawing.Point(144, 279);
             this.playBtn.Name = "playBtn";
             this.playBtn.Size = new System.Drawing.Size(60, 30);
             this.playBtn.TabIndex = 2;
@@ -77,9 +78,9 @@
             this.playList.FormattingEnabled = true;
             this.playList.Location = new System.Drawing.Point(12, 47);
             this.playList.Name = "playList";
-            this.playList.Size = new System.Drawing.Size(260, 160);
+            this.playList.Size = new System.Drawing.Size(260, 186);
             this.playList.TabIndex = 3;
-            this.playList.SelectedIndexChanged += new System.EventHandler(this.playList_SelectedIndexChanged);
+            this.playList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
             // 
             // loadBtn
             // 
@@ -94,7 +95,7 @@
             // stopBtn
             // 
             this.stopBtn.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.stopBtn.Location = new System.Drawing.Point(78, 219);
+            this.stopBtn.Location = new System.Drawing.Point(78, 279);
             this.stopBtn.Name = "stopBtn";
             this.stopBtn.Size = new System.Drawing.Size(60, 30);
             this.stopBtn.TabIndex = 5;
@@ -102,11 +103,21 @@
             this.stopBtn.UseVisualStyleBackColor = true;
             this.stopBtn.Click += new System.EventHandler(this.stopBtn_Click);
             // 
+            // playLabel
+            // 
+            this.playLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.playLabel.Location = new System.Drawing.Point(12, 248);
+            this.playLabel.Name = "playLabel";
+            this.playLabel.Size = new System.Drawing.Size(260, 20);
+            this.playLabel.TabIndex = 6;
+            // 
             // Player
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 321);
+            this.Controls.Add(this.playLabel);
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.loadBtn);
             this.Controls.Add(this.playList);
@@ -128,6 +139,7 @@
         private System.Windows.Forms.ListBox playList;
         private System.Windows.Forms.Button loadBtn;
         private System.Windows.Forms.Button stopBtn;
+        private System.Windows.Forms.Label playLabel;
     }
 }
 
