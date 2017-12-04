@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.Threading;
+using System.Timers;
 
 namespace YourMusicPlayer
 {
@@ -28,10 +29,33 @@ namespace YourMusicPlayer
         //States
         bool playing = false;
         int currentIndex = -1;
+        bool stopped = false;
+
+        //StopTypes
+        public enum PlaybackStopTypes
+        {
+            PlaybackStoppedByUser, PlaybackStoppedReachingEndOfFile
+        }
+        public PlaybackStopTypes PlaybackStopType { get; set; }
+
+        //Settings
+        bool shuffleMode = false;
+        bool continueMode = false;
 
         public Player()
         {
+            CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
+            InitializeTimers();
+        }
+
+        private void InitializeTimers()
+        {
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(updateTimeLabel);
+            aTimer.Interval = 100;
+            aTimer.Enabled = true;
+            Debug.Print("TEST");
         }
 
         void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -46,8 +70,7 @@ namespace YourMusicPlayer
                 {
                     if (playing)
                     {
-                        stopSound();
-                        playSound();
+                        stopSound(true);
                     }
                     else
                     {
@@ -66,13 +89,10 @@ namespace YourMusicPlayer
 
         private void loadBtn_Click(object sender, EventArgs e)
         {
-            Debug.Print("TEST");
-
             FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
 
             folderBrowser.Description = "Choose a folder containing music files";
             folderBrowser.SelectedPath = Environment.GetFolderPath((Environment.SpecialFolder.MyMusic));
-            Debug.Print("FOLDER:" + folderBrowser.SelectedPath);
             folderBrowser.SelectedPath = @"C:\Users\Patryk\Music";
 
             if (folderBrowser.ShowDialog() == DialogResult.OK)
@@ -91,7 +111,6 @@ namespace YourMusicPlayer
             {
                 _files = new List<string>();
             }
-            Debug.Print(path);
             //Wczytanie listy plikow
             filePaths = Directory.GetFiles(@path, "*.mp3", SearchOption.AllDirectories);
 
@@ -103,9 +122,7 @@ namespace YourMusicPlayer
                 
                 ListViewItem item = new ListViewItem();
                 String folder = getFilePath(filePaths[i],1);
-                //Debug.Print(folder);
                 String filename = getFilePath(filePaths[i],2);
-                Debug.Print(filename);
                 if (folder != "ERROR" && filename != "ERROR")
                 {
                     item.SubItems.Add(filename);
@@ -133,30 +150,28 @@ namespace YourMusicPlayer
             return name;
         }
 
-        private void playBtn_Click(object sender, EventArgs e)
+        private void updateTimeLabel(object source, ElapsedEventArgs e)
         {
-            Debug.Print(playList.SelectedIndex.ToString());
-            if (playList.SelectedIndex >= 0)
+            if (audioFile!=null)
             {
-                playing = !playing;
-                if (playing)
-                {
-                    playSound();
-                }
-                else
-                {
-                    playBtn.Text = "Play";
-                    outputDevice.Pause();
-                }
+                int min = audioFile.CurrentTime.Minutes;
+                int sec = audioFile.CurrentTime.Seconds;
+                String seconds = sec.ToString();
+                if (sec < 10)
+                    seconds = "0" + sec.ToString();
+                String txt = min.ToString() + ":" + seconds;
+                timeLabel.Text = txt;
             }
+            else
+                timeLabel.Text = "0:00";
         }
 
         private void setLabel(string label)
         {
-            playLabel.Text = label;
+            playLabel.Text = label; 
         }
 
-        public void playSound()
+        private void playSound()
         {
             if (playing)
             {
@@ -173,8 +188,10 @@ namespace YourMusicPlayer
                     audioFile = new AudioFileReader(filePath);
                     outputDevice.Init(audioFile);
                     setLabel(getFilePath(filePath, 2));
-                }
+                }  
                 outputDevice.Play();
+
+                PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
             }
         }
 
@@ -186,31 +203,77 @@ namespace YourMusicPlayer
             setLabel(getFilePath(filePath, 2));
             outputDevice.Init(audioFile);
             outputDevice.Play();
+
+            PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
         }
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs args)
         {
-            //outputDevice.Dispose();
-            //outputDevice = null;
-            //audioFile.Dispose();
-            //audioFile = null;
-        }
-
-        private void stopSound()
-        {
-            outputDevice.Dispose();
-            outputDevice = null;
-            audioFile.Dispose();
-            audioFile = null;
-        }
-
-        private void stopBtn_Click(object sender, EventArgs e)
-        {
-            if(playing)
+            Debug.Print(PlaybackStopType.ToString());
+            //if ContinueMode==true and StoppedByEOF then play next song
+            if (continueMode && PlaybackStopType != PlaybackStopTypes.PlaybackStoppedByUser)
             {
-                stopSound();
-                playBtn.Text = "Play";
-                playing = false;
+                //RESET LABELS
+                setLabel("");
+
+                //Choose next song from list
+                int countFiles = _files.Count;
+                if (shuffleMode)
+                {
+
+                    Random ran = new Random(Guid.NewGuid().GetHashCode());
+                    int random = ran.Next(0, countFiles - 1);
+
+                    playList.SelectedIndex = random;
+                    playSoundForced();
+                }
+                else
+                {
+                    if (currentIndex < countFiles - 1)
+                    {
+                        playList.SelectedIndex = currentIndex + 1;
+                        playSoundForced();
+                    }
+                    else
+                    {
+                        playList.SelectedIndex = 0;
+                        playSoundForced();
+                    }
+                }
+            }
+            //else if continuePlaying and StoppedByUser
+            else if (stopped && PlaybackStopType == PlaybackStopTypes.PlaybackStoppedByUser)
+            {
+                stopped = false;
+                playSoundForced();
+            }
+            else if(PlaybackStopType != PlaybackStopTypes.PlaybackStoppedByUser)
+            {
+                stopSound(false);
+            }
+        }
+
+        private void stopSound(bool continuePlaying)
+        {       
+            PlaybackStopType = PlaybackStopTypes.PlaybackStoppedByUser;
+            if (playing)
+            {
+                if (continuePlaying)
+                {
+                    stopped = true;
+                    outputDevice?.Dispose();
+                    audioFile?.Dispose();
+                    audioFile = null;
+                }
+                else
+                {
+                    outputDevice?.Dispose();
+                    outputDevice = null;
+                    audioFile?.Dispose();
+                    audioFile = null;
+                    playBtn.Text = "Play";
+                    playing = false;
+                }
             }
             else
             {
@@ -218,13 +281,33 @@ namespace YourMusicPlayer
                 audioFile?.Dispose();
                 audioFile = null;
             }
-            setLabel("");   
+            setLabel("");
+        }
+
+        private void playBtn_Click(object sender, EventArgs e)
+        {
+            if (playList.SelectedIndex >= 0)
+            {
+                playing = !playing;
+                if (playing)
+                {
+                    playSound();
+                }
+                else
+                {
+                    playBtn.Text = "Play";
+                    outputDevice.Pause();
+                }
+            }
+        }
+
+        private void stopBtn_Click(object sender, EventArgs e)
+        {
+            stopSound(false); 
         }
 
         private void nextBtn_Click(object sender, EventArgs e)
         {
-            outputDevice?.Stop();
-            
             int countFiles = _files.Count;
             if (countFiles > 0)
             {
@@ -239,7 +322,7 @@ namespace YourMusicPlayer
                     {
                         playList.SelectedIndex = 0;
                     }
-                    playSoundForced();
+                    stopSound(true);
                 }
                 else
                 {
@@ -260,8 +343,6 @@ namespace YourMusicPlayer
 
         private void prevBtn_Click(object sender, EventArgs e)
         {
-            outputDevice?.Stop();
-
             int countFiles = _files.Count;
             if (countFiles > 0)
             {
@@ -276,7 +357,7 @@ namespace YourMusicPlayer
                     {
                         playList.SelectedIndex = countFiles - 1;
                     }
-                    playSoundForced();
+                    stopSound(true);
                 }
                 else
                 {
@@ -290,6 +371,24 @@ namespace YourMusicPlayer
                     }
                 }
             }          
+        }
+
+        private void continueBtn_Click(object sender, EventArgs e)
+        {
+            continueMode = !continueMode;
+            if (continueMode)
+                continueBtn.BackColor = SystemColors.Highlight;
+            else
+                continueBtn.BackColor = SystemColors.Control;
+        }
+
+        private void shuffleBtn_Click(object sender, EventArgs e)
+        {
+            shuffleMode = !shuffleMode;
+            if (shuffleMode)
+                shuffleBtn.BackColor = SystemColors.Highlight;
+            else
+                shuffleBtn.BackColor = SystemColors.Control;
         }
     }
 }

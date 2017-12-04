@@ -35,6 +35,9 @@
             this.loadBtn = new System.Windows.Forms.Button();
             this.stopBtn = new System.Windows.Forms.Button();
             this.playLabel = new System.Windows.Forms.Label();
+            this.continueBtn = new System.Windows.Forms.Button();
+            this.shuffleBtn = new System.Windows.Forms.Button();
+            this.timeLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // prevBtn
@@ -109,14 +112,51 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.playLabel.Location = new System.Drawing.Point(12, 248);
             this.playLabel.Name = "playLabel";
-            this.playLabel.Size = new System.Drawing.Size(260, 20);
+            this.playLabel.Size = new System.Drawing.Size(192, 20);
             this.playLabel.TabIndex = 6;
+            this.playLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // continueBtn
+            // 
+            this.continueBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.continueBtn.BackColor = System.Drawing.SystemColors.Control;
+            this.continueBtn.Location = new System.Drawing.Point(243, 12);
+            this.continueBtn.Name = "continueBtn";
+            this.continueBtn.Size = new System.Drawing.Size(29, 29);
+            this.continueBtn.TabIndex = 7;
+            this.continueBtn.Text = "C";
+            this.continueBtn.UseVisualStyleBackColor = false;
+            this.continueBtn.Click += new System.EventHandler(this.continueBtn_Click);
+            // 
+            // shuffleBtn
+            // 
+            this.shuffleBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.shuffleBtn.Location = new System.Drawing.Point(208, 12);
+            this.shuffleBtn.Name = "shuffleBtn";
+            this.shuffleBtn.Size = new System.Drawing.Size(29, 29);
+            this.shuffleBtn.TabIndex = 8;
+            this.shuffleBtn.Text = "S";
+            this.shuffleBtn.UseVisualStyleBackColor = true;
+            this.shuffleBtn.Click += new System.EventHandler(this.shuffleBtn_Click);
+            // 
+            // timeLabel
+            // 
+            this.timeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.timeLabel.Location = new System.Drawing.Point(227, 248);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(45, 20);
+            this.timeLabel.TabIndex = 9;
+            this.timeLabel.Text = "0:00";
+            this.timeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Player
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 321);
+            this.Controls.Add(this.timeLabel);
+            this.Controls.Add(this.shuffleBtn);
+            this.Controls.Add(this.continueBtn);
             this.Controls.Add(this.playLabel);
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.loadBtn);
@@ -140,6 +180,9 @@
         private System.Windows.Forms.Button loadBtn;
         private System.Windows.Forms.Button stopBtn;
         private System.Windows.Forms.Label playLabel;
+        private System.Windows.Forms.Button continueBtn;
+        private System.Windows.Forms.Button shuffleBtn;
+        private System.Windows.Forms.Label timeLabel;
     }
 }
 
