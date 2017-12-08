@@ -161,6 +161,13 @@ namespace YourMusicPlayer
                     seconds = "0" + sec.ToString();
                 String txt = min.ToString() + ":" + seconds;
                 timeLabel.Text = txt;
+
+                //SEEKBAR
+                float length = (float)audioFile.Length;
+                float position = (float)audioFile.Position;
+                float value = position / length * 1000;
+                
+                seekBar.Value = (int)value;
             }
             else
                 timeLabel.Text = "0:00";
