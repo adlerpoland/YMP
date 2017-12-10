@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NAudio.cs" />
     <Compile Include="Player.cs">
       <SubType>Form</SubType>
     </Compile>

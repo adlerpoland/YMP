@@ -22,39 +22,27 @@ namespace YourMusicPlayer
         String[] filePaths;
         List<string> _files = new List<string>();
 
-        //NAudio
-        private WaveOutEvent outputDevice;
-        private AudioFileReader audioFile;
-
-        //States
-        bool playing = false;
         int currentIndex = -1;
-        bool stopped = false;
-
+        
         bool mouseDown = false;
 
-        //StopTypes
-        public enum PlaybackStopTypes
-        {
-            PlaybackStoppedByUser, PlaybackStoppedReachingEndOfFile
-        }
-        public PlaybackStopTypes PlaybackStopType { get; set; }
+        NAudio audioPlayer = new NAudio();
 
-        //Settings
-        bool shuffleMode = false;
-        bool continueMode = false;
+        Random ran;
 
         public Player()
         {
             CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
             InitializeTimers();
+            ran = new Random((int)System.DateTime.Now.Ticks);
         }
 
         private void InitializeTimers()
         {
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(updateTimeLabel);
+            aTimer.Elapsed += new ElapsedEventHandler(checkContinueMode);
             aTimer.Interval = 500;
             aTimer.Enabled = true;
         }
@@ -69,18 +57,23 @@ namespace YourMusicPlayer
 
                 if (index != System.Windows.Forms.ListBox.NoMatches)
                 {
-                    if (playing)
+                    if (audioPlayer.playing)
                     {
-                        stopSound(true);
+                        String filePath = filePaths[playList.SelectedIndex];
+                        currentIndex = playList.SelectedIndex;
+                        audioPlayer.stopSound(filePath);
+                        setLabel(getFilePath(filePath, 2));
                     }
                     else
                     {
-                        outputDevice?.Stop();
-                        audioFile?.Dispose();
-                        audioFile = null;
-                        playing = true;
-                        playBtn.Text = "Play";
-                        playSound();
+                        audioPlayer.outputDevice?.Stop();
+                        audioPlayer.audioFile?.Dispose();
+                        audioPlayer.audioFile = null;
+                        audioPlayer.playing = true;
+                        String filePath = filePaths[playList.SelectedIndex];
+                        currentIndex = playList.SelectedIndex;
+                        if (audioPlayer.playSound(filePath))
+                            setLabel(getFilePath(filePath, 2));
                     }
                 }
 
@@ -153,170 +146,135 @@ namespace YourMusicPlayer
 
         private void updateTimeLabel(object source, ElapsedEventArgs e)
         {
-            if (audioFile!=null)
+            if (audioPlayer.audioFile != null)
             {
                 //IF MOUSE IS UP AND NOT HOLDING SEEKBAR
                 if (!mouseDown)
                 {
-                    int min = audioFile.CurrentTime.Minutes;
-                    int sec = audioFile.CurrentTime.Seconds;
+                    int min = audioPlayer.audioFile.CurrentTime.Minutes;
+                    int sec = audioPlayer.audioFile.CurrentTime.Seconds;
                     String seconds = sec.ToString();
                     if (sec < 10)
                         seconds = "0" + sec.ToString();
                     String txt = min.ToString() + ":" + seconds;
                     timeLabel.Text = txt;
-                
-                    //SEEKBAR
-                    float length = (float)audioFile.Length;
-                    float position = (float)audioFile.Position;
-                    float value = position / length * 1000;
 
-                    seekBar.Value = (int)value;
+                    //SEEKBAR
+                    try
+                    {
+                        float length = (float)audioPlayer.audioFile.Length;
+                        float position = (float)audioPlayer.audioFile.Position;
+                        float value = position / length * 1000;
+
+                        seekBar.Value = (int)value;
+                    }
+                    catch(NullReferenceException ex)
+                    {
+                        Debug.Print("Null reference");
+                    }
+
+                    
                 }
             }
             else
                 timeLabel.Text = "0:00";
         }
 
-        private void setLabel(string label)
+        private void checkContinueMode(object source, ElapsedEventArgs e)
+        {
+            if(audioPlayer.waitingForSong)
+            {
+                audioPlayer.waitingForSong = false;
+                startNextSong();
+            }
+        }
+
+        public void setLabel(string label)
         {
             playLabel.Text = label; 
-        }
-
-        private void playSound()
-        {
-            if (playing)
-            {
+            if(audioPlayer.playing)
                 playBtn.Text = "Pause";
-                if (outputDevice == null)
-                {
-                    outputDevice = new WaveOutEvent();
-                    outputDevice.PlaybackStopped += OnPlaybackStopped;
-                }
-                if (audioFile == null)
-                {
-                    String filePath = filePaths[playList.SelectedIndex];
-                    currentIndex = playList.SelectedIndex;
-                    audioFile = new AudioFileReader(filePath);
-                    outputDevice.Init(audioFile);
-                    setLabel(getFilePath(filePath, 2));
-                }  
-                outputDevice.Play();
-
-                PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-            }
-        }
-
-        public void playSoundForced()
-        {
-            String filePath = filePaths[playList.SelectedIndex];
-            currentIndex = playList.SelectedIndex;
-            audioFile = new AudioFileReader(filePath);
-            setLabel(getFilePath(filePath, 2));
-            outputDevice.Init(audioFile);
-            outputDevice.Play();
-
-            PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-        }
-
-        private void OnPlaybackStopped(object sender, StoppedEventArgs args)
-        {
-            Debug.Print(PlaybackStopType.ToString());
-            //if ContinueMode==true and StoppedByEOF then play next song
-            if (continueMode && PlaybackStopType != PlaybackStopTypes.PlaybackStoppedByUser)
-            {
-                //RESET LABELS
-                setLabel("");
-
-                //Choose next song from list
-                int countFiles = _files.Count;
-                if (shuffleMode)
-                {
-
-                    Random ran = new Random(Guid.NewGuid().GetHashCode());
-                    int random = ran.Next(0, countFiles - 1);
-
-                    playList.SelectedIndex = random;
-                    playSoundForced();
-                }
-                else
-                {
-                    if (currentIndex < countFiles - 1)
-                    {
-                        playList.SelectedIndex = currentIndex + 1;
-                        playSoundForced();
-                    }
-                    else
-                    {
-                        playList.SelectedIndex = 0;
-                        playSoundForced();
-                    }
-                }
-            }
-            //else if continuePlaying and StoppedByUser
-            else if (stopped && PlaybackStopType == PlaybackStopTypes.PlaybackStoppedByUser)
-            {
-                stopped = false;
-                playSoundForced();
-            }
-            else if(PlaybackStopType != PlaybackStopTypes.PlaybackStoppedByUser)
-            {
-                stopSound(false);
-            }
-        }
-
-        private void stopSound(bool continuePlaying)
-        {       
-            PlaybackStopType = PlaybackStopTypes.PlaybackStoppedByUser;
-            if (playing)
-            {
-                if (continuePlaying)
-                {
-                    stopped = true;
-                    outputDevice?.Dispose();
-                    audioFile?.Dispose();
-                    audioFile = null;
-                }
-                else
-                {
-                    outputDevice?.Dispose();
-                    outputDevice = null;
-                    audioFile?.Dispose();
-                    audioFile = null;
-                    playBtn.Text = "Play";
-                    playing = false;
-                }
-            }
             else
-            {
-                outputDevice?.Stop();
-                audioFile?.Dispose();
-                audioFile = null;
-            }
-            setLabel("");
-            seekBar.Value = 0;
+                playBtn.Text = "Play";
         }
 
         private void playBtn_Click(object sender, EventArgs e)
         {
             if (playList.SelectedIndex >= 0)
             {
-                playing = !playing;
-                if (playing)
+                audioPlayer.playing = !audioPlayer.playing;
+                if (audioPlayer.playing)
                 {
-                    playSound();
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+                    if(audioPlayer.playSound(filePath))
+                        setLabel(getFilePath(filePath, 2));
                 }
                 else
                 {
                     playBtn.Text = "Play";
-                    outputDevice.Pause();
+                    audioPlayer.outputDevice.Pause();
+                }
+            }
+        }
+
+        private void startNextSong()
+        {
+            //RESET LABELS
+            setLabel("");
+
+            //Choose next song from list
+            int countFiles = _files.Count;
+            
+            if (audioPlayer.shuffleMode)
+            {
+                int random = ran.Next(0, countFiles);
+
+                if(countFiles-1>1)
+                {
+                    while(random.Equals(playList.SelectedIndex))
+                        random = ran.Next(0, countFiles);
+                }
+                playList.SelectedIndex = random;
+
+                String filePath = filePaths[playList.SelectedIndex];
+                currentIndex = playList.SelectedIndex;
+
+                audioPlayer.playSoundForced(filePath);
+                setLabel(getFilePath(filePath, 2));
+            }
+            else
+            {
+                if (currentIndex < countFiles - 1)
+                {
+                    playList.SelectedIndex = currentIndex + 1;
+
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+
+                    audioPlayer.playSoundForced(filePath);
+                    setLabel(getFilePath(filePath, 2));
+                }
+                else
+                {
+                    playList.SelectedIndex = 0;
+
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+
+                    audioPlayer.playSoundForced(filePath);
+                    setLabel(getFilePath(filePath, 2));
                 }
             }
         }
 
         private void stopBtn_Click(object sender, EventArgs e)
         {
-            stopSound(false); 
+            if (audioPlayer.stopSound())
+            {
+                playBtn.Text = "Play";
+                seekBar.Value = 0;
+            }
         }
 
         private void nextBtn_Click(object sender, EventArgs e)
@@ -324,7 +282,7 @@ namespace YourMusicPlayer
             int countFiles = _files.Count;
             if (countFiles > 0)
             {
-                if (playing)
+                if (audioPlayer.playing)
                 {
                     if(currentIndex < countFiles-1)
                     {
@@ -335,7 +293,10 @@ namespace YourMusicPlayer
                     {
                         playList.SelectedIndex = 0;
                     }
-                    stopSound(true);
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+                    audioPlayer.stopSound(filePath);
+                    setLabel(getFilePath(filePath, 2));
                 }
                 else
                 {
@@ -359,7 +320,7 @@ namespace YourMusicPlayer
             int countFiles = _files.Count;
             if (countFiles > 0)
             {
-                if (playing)
+                if (audioPlayer.playing)
                 {
                     if (currentIndex > 0)
                     {
@@ -370,7 +331,10 @@ namespace YourMusicPlayer
                     {
                         playList.SelectedIndex = countFiles - 1;
                     }
-                    stopSound(true);
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+                    audioPlayer.stopSound(filePath);
+                    setLabel(getFilePath(filePath, 2));
                 }
                 else
                 {
@@ -388,8 +352,8 @@ namespace YourMusicPlayer
 
         private void continueBtn_Click(object sender, EventArgs e)
         {
-            continueMode = !continueMode;
-            if (continueMode)
+            audioPlayer.continueMode = !audioPlayer.continueMode;
+            if (audioPlayer.continueMode)
                 continueBtn.BackColor = SystemColors.Highlight;
             else
                 continueBtn.BackColor = SystemColors.Control;
@@ -397,8 +361,8 @@ namespace YourMusicPlayer
 
         private void shuffleBtn_Click(object sender, EventArgs e)
         {
-            shuffleMode = !shuffleMode;
-            if (shuffleMode)
+            audioPlayer.shuffleMode = !audioPlayer.shuffleMode;
+            if (audioPlayer.shuffleMode)
                 shuffleBtn.BackColor = SystemColors.Highlight;
             else
                 shuffleBtn.BackColor = SystemColors.Control;
@@ -406,13 +370,13 @@ namespace YourMusicPlayer
 
         private void seekBar_MouseCaptureChanged(object sender, EventArgs e)
         {
-            if (audioFile != null)
+            if (audioPlayer.audioFile != null)
             {
                 //Seekbar current value 0-1000
                 int value = seekBar.Value;
 
                 //SEEKBAR
-                float length = (float)audioFile.Length;
+                float length = (float)audioPlayer.audioFile.Length;
 
                 float percent = (float)value / 1000;
 
@@ -420,7 +384,7 @@ namespace YourMusicPlayer
 
                 Debug.Print(length.ToString() + "/" + percent.ToString());
 
-                audioFile.Position = (long)position;
+                audioPlayer.audioFile.Position = (long)position;
 
             }
             mouseDown = false;
@@ -438,7 +402,7 @@ namespace YourMusicPlayer
 
         void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (mouseDown && audioFile != null)
+            if (mouseDown && audioPlayer.audioFile != null)
             {
                 //Seekbar current value 0-1000
                 int value = seekBar.Value;
@@ -446,8 +410,8 @@ namespace YourMusicPlayer
                 float percent = (float)value / 1000;
 
                 //Timer
-                int min = audioFile.TotalTime.Minutes;
-                int sec = audioFile.TotalTime.Seconds;
+                int min = audioPlayer.audioFile.TotalTime.Minutes;
+                int sec = audioPlayer.audioFile.TotalTime.Seconds;
 
                 float percentseconds = (float)(min * 60 + sec) * percent;
 
