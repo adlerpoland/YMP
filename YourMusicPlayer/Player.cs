@@ -31,6 +31,8 @@ namespace YourMusicPlayer
         int currentIndex = -1;
         bool stopped = false;
 
+        bool mouseDown = false;
+
         //StopTypes
         public enum PlaybackStopTypes
         {
@@ -53,9 +55,8 @@ namespace YourMusicPlayer
         {
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(updateTimeLabel);
-            aTimer.Interval = 100;
+            aTimer.Interval = 500;
             aTimer.Enabled = true;
-            Debug.Print("TEST");
         }
 
         void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -154,20 +155,24 @@ namespace YourMusicPlayer
         {
             if (audioFile!=null)
             {
-                int min = audioFile.CurrentTime.Minutes;
-                int sec = audioFile.CurrentTime.Seconds;
-                String seconds = sec.ToString();
-                if (sec < 10)
-                    seconds = "0" + sec.ToString();
-                String txt = min.ToString() + ":" + seconds;
-                timeLabel.Text = txt;
-
-                //SEEKBAR
-                float length = (float)audioFile.Length;
-                float position = (float)audioFile.Position;
-                float value = position / length * 1000;
+                //IF MOUSE IS UP AND NOT HOLDING SEEKBAR
+                if (!mouseDown)
+                {
+                    int min = audioFile.CurrentTime.Minutes;
+                    int sec = audioFile.CurrentTime.Seconds;
+                    String seconds = sec.ToString();
+                    if (sec < 10)
+                        seconds = "0" + sec.ToString();
+                    String txt = min.ToString() + ":" + seconds;
+                    timeLabel.Text = txt;
                 
-                seekBar.Value = (int)value;
+                    //SEEKBAR
+                    float length = (float)audioFile.Length;
+                    float position = (float)audioFile.Position;
+                    float value = position / length * 1000;
+
+                    seekBar.Value = (int)value;
+                }
             }
             else
                 timeLabel.Text = "0:00";
@@ -289,6 +294,7 @@ namespace YourMusicPlayer
                 audioFile = null;
             }
             setLabel("");
+            seekBar.Value = 0;
         }
 
         private void playBtn_Click(object sender, EventArgs e)
@@ -396,6 +402,66 @@ namespace YourMusicPlayer
                 shuffleBtn.BackColor = SystemColors.Highlight;
             else
                 shuffleBtn.BackColor = SystemColors.Control;
+        }
+
+        private void seekBar_MouseCaptureChanged(object sender, EventArgs e)
+        {
+            if (audioFile != null)
+            {
+                //Seekbar current value 0-1000
+                int value = seekBar.Value;
+
+                //SEEKBAR
+                float length = (float)audioFile.Length;
+
+                float percent = (float)value / 1000;
+
+                float position = length * percent;
+
+                Debug.Print(length.ToString() + "/" + percent.ToString());
+
+                audioFile.Position = (long)position;
+
+            }
+            mouseDown = false;
+        }
+
+        void OnMouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDown = true;
+        }
+
+        void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+
+        void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown && audioFile != null)
+            {
+                //Seekbar current value 0-1000
+                int value = seekBar.Value;
+
+                float percent = (float)value / 1000;
+
+                //Timer
+                int min = audioFile.TotalTime.Minutes;
+                int sec = audioFile.TotalTime.Seconds;
+
+                float percentseconds = (float)(min * 60 + sec) * percent;
+
+                sec = (int)Math.Round(percentseconds);
+
+                min = (sec - (sec % 60)) / 60;
+                sec = sec % 60;
+
+                String seconds = sec.ToString();
+                if (sec < 10)
+                    seconds = "0" + sec.ToString();
+                String txt = min.ToString() + ":" + seconds;
+                timeLabel.Text = txt;
+            }
         }
     }
 }

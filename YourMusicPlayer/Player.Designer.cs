@@ -160,6 +160,10 @@
             this.seekBar.Name = "seekBar";
             this.seekBar.Size = new System.Drawing.Size(206, 45);
             this.seekBar.TabIndex = 10;
+            this.seekBar.MouseCaptureChanged += new System.EventHandler(this.seekBar_MouseCaptureChanged);
+            this.seekBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+            this.seekBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+            this.seekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // Player
             // 
