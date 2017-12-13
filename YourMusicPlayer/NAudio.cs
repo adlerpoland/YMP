@@ -24,6 +24,8 @@ namespace YourMusicPlayer
         public bool shuffleMode { get; set; }
         public bool continueMode { get; set; }
 
+        public int volume { get; set; }
+
         private String nextSongPath = "";
 
         //StopTypes
@@ -39,6 +41,7 @@ namespace YourMusicPlayer
             continueMode = false;
             playing = false;
             stopped = false;
+            volume = 20;
         }
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs args)

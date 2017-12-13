@@ -427,5 +427,18 @@ namespace YourMusicPlayer
                 timeLabel.Text = txt;
             }
         }
+
+        private void changeVolume(object sender, EventArgs e)
+        {
+            if (audioPlayer.outputDevice != null)
+                try
+                {
+                    audioPlayer.outputDevice.Volume = volumeBar.Value / 20f;
+                }
+                catch (NullReferenceException ex)
+                {
+                    Debug.Print("changeVolume() exception");
+                }
+        }
     }
 }
