@@ -180,5 +180,10 @@ namespace YourMusicPlayer
             outputDevice.Play();
             PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
         }
+
+        public void getSoundInfo()
+        {
+            audioFile.
+        }
     }
 }

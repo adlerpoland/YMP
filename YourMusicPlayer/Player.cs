@@ -443,5 +443,15 @@ namespace YourMusicPlayer
                     Debug.Print("changeVolume() exception :" + ex.ToString());
                 }
         }
+
+        private void infoBtn_Click(object sender, EventArgs e)
+        {
+            if(currentIndex >= 0)
+            {
+                String filePath = filePaths[currentIndex];
+                
+                //MessageBox.Show()
+            }
+        }
     }
 }
