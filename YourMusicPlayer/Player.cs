@@ -106,7 +106,10 @@ namespace YourMusicPlayer
                 _files = new List<string>();
             }
             //Wczytanie listy plikow
-            filePaths = Directory.GetFiles(@path, "*.mp3", SearchOption.AllDirectories);
+
+            filePaths = Directory.GetFiles(@path, "*.*", SearchOption.AllDirectories)
+            .Where(s => s.EndsWith(".mp3") || s.EndsWith(".wav") || s.EndsWith(".aif") || s.EndsWith(".mp4") || s.EndsWith(".aac") || s.EndsWith(".wma")).ToArray();
+            
 
             //Wczytanie ilosci plikow
             int length = filePaths.GetLength(0);
@@ -131,7 +134,7 @@ namespace YourMusicPlayer
         public String getFilePath(String path,int i)
         {
             //String pattern = @"\\([a - zA - Z0 - 9_() !@#$%^&*]*.xml)";
-            String pattern = @"\\(.*)\\(.*[.]mp3)";
+            String pattern = @"\\(.*)\\(.*[.]*)";
 
             MatchCollection matches = Regex.Matches(path, pattern);
 
@@ -170,7 +173,7 @@ namespace YourMusicPlayer
                     }
                     catch(NullReferenceException ex)
                     {
-                        Debug.Print("Null reference");
+                        Debug.Print("Null reference" + ex.ToString());
                     }
 
                     
@@ -437,7 +440,7 @@ namespace YourMusicPlayer
                 }
                 catch (NullReferenceException ex)
                 {
-                    Debug.Print("changeVolume() exception");
+                    Debug.Print("changeVolume() exception :" + ex.ToString());
                 }
         }
     }

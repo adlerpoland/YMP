@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace YourMusicPlayer
 {
@@ -46,7 +47,7 @@ namespace YourMusicPlayer
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs args)
         {
-            Debug.Print(PlaybackStopType.ToString());
+            //Debug.Print(PlaybackStopType.ToString());
             //if ContinueMode==true and StoppedByEOF then play next song
             if (continueMode && PlaybackStopType != PlaybackStopTypes.PlaybackStoppedByUser)
             {
@@ -145,10 +146,26 @@ namespace YourMusicPlayer
                 }
                 if (audioFile == null)
                 {
-                    audioFile = new AudioFileReader(filePath);
-                    outputDevice.Init(audioFile);     
+                    try
+                    {
+                        audioFile = new AudioFileReader(filePath);
+                        outputDevice.Init(audioFile);
+                    }
+                    catch (FormatException)
+                    {
+                        MessageBox.Show("Format exception, file not supported : ");
+                    }
+                   
                 }
-                outputDevice.Play();
+                try
+                {
+                    outputDevice.Play();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Debug.Print("playSound() InvalidOperationException : " + ex.ToString());
+
+                }
 
                 PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
                 return true;

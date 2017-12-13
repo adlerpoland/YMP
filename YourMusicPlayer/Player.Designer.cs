@@ -198,7 +198,7 @@
             this.Controls.Add(this.prevBtn);
             this.MinimumSize = new System.Drawing.Size(385, 400);
             this.Name = "Player";
-            this.Text = "Your Music Player";
+            this.Text = "Your Music Player 1";
             ((System.ComponentModel.ISupportInitialize)(this.seekBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeBar)).EndInit();
             this.ResumeLayout(false);
