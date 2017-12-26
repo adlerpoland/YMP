@@ -183,7 +183,7 @@ namespace YourMusicPlayer
 
         public void getSoundInfo()
         {
-            audioFile.
+            //audioFile.
         }
     }
 }

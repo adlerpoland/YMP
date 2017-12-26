@@ -449,8 +449,25 @@ namespace YourMusicPlayer
             if(currentIndex >= 0)
             {
                 String filePath = filePaths[currentIndex];
+
+                TagLib.File file = TagLib.File.Create(@filePath);
+
+                String[] info = new string[10];
+                info[1] = file.Tag.Title;
+                info[2] = file.Tag.JoinedPerformers;
+                info[3] = file.Tag.Album;
+                info[4] = file.Tag.Year.ToString();
+                info[5] = file.Tag.Track.ToString();
+                info[6] = file.Tag.FirstGenre;
+                info[7] = file.Tag.Copyright;
+                info[8] = file.Properties.AudioBitrate.ToString();
+                int seconds = (int)Math.Round(file.Properties.Duration.TotalSeconds);
+                info[9] = seconds.ToString();
                 
-                //MessageBox.Show()
+                Info infoForm = new Info();
+                infoForm.setInfo(info);        
+
+                infoForm.Show();
             }
         }
     }
