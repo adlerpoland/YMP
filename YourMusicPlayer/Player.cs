@@ -211,7 +211,11 @@ namespace YourMusicPlayer
                     String filePath = filePaths[playList.SelectedIndex];
                     currentIndex = playList.SelectedIndex;
                     if(audioPlayer.playSound(filePath))
-                        setLabel(getFilePath(filePath, 2));
+                    {
+                        String name = filePath;
+                        if (audioPlayer.audioFile.FileName.Equals(name))
+                            setLabel(getFilePath(name,2));
+                    }    
                 }
                 else
                 {
@@ -285,34 +289,60 @@ namespace YourMusicPlayer
             int countFiles = _files.Count;
             if (countFiles > 0)
             {
-                if (audioPlayer.playing)
+                if (audioPlayer.shuffleMode)
                 {
-                    if(currentIndex < countFiles-1)
+                    int random = ran.Next(0, countFiles);
+
+                    if (countFiles - 1 > 1)
                     {
-                        currentIndex++;
-                        playList.SelectedIndex = currentIndex;
+                        while (random.Equals(playList.SelectedIndex))
+                            random = ran.Next(0, countFiles);
+                    }
+
+                    if (audioPlayer.playing)
+                    {
+                        playList.SelectedIndex = random;
+                        String filePath = filePaths[playList.SelectedIndex];
+                        currentIndex = playList.SelectedIndex;
+                        audioPlayer.stopSound(filePath);
+                        setLabel(getFilePath(filePath, 2));
                     }
                     else
                     {
-                        playList.SelectedIndex = 0;
+                        playList.SelectedIndex = random;
                     }
-                    String filePath = filePaths[playList.SelectedIndex];
-                    currentIndex = playList.SelectedIndex;
-                    audioPlayer.stopSound(filePath);
-                    setLabel(getFilePath(filePath, 2));
                 }
                 else
                 {
-                    if (playList.SelectedIndex >= 0)
+                    if (audioPlayer.playing)
                     {
-                        if (countFiles > playList.SelectedIndex + 1)
-                            playList.SelectedIndex++;
+                        if (currentIndex < countFiles - 1)
+                        {
+                            currentIndex++;
+                            playList.SelectedIndex = currentIndex;
+                        }
                         else
+                        {
                             playList.SelectedIndex = 0;
+                        }
+                        String filePath = filePaths[playList.SelectedIndex];
+                        currentIndex = playList.SelectedIndex;
+                        audioPlayer.stopSound(filePath);
+                        setLabel(getFilePath(filePath, 2));
                     }
                     else
                     {
-                        playList.SelectedIndex = 0;
+                        if (playList.SelectedIndex >= 0)
+                        {
+                            if (countFiles > playList.SelectedIndex + 1)
+                                playList.SelectedIndex++;
+                            else
+                                playList.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            playList.SelectedIndex = 0;
+                        }
                     }
                 }
             }    
@@ -385,7 +415,7 @@ namespace YourMusicPlayer
 
                 float position = length * percent;
 
-                Debug.Print(length.ToString() + "/" + percent.ToString());
+                //Debug.Print(length.ToString() + "/" + percent.ToString());
 
                 audioPlayer.audioFile.Position = (long)position;
 
@@ -434,25 +464,33 @@ namespace YourMusicPlayer
         private void changeVolume(object sender, EventArgs e)
         {
             if (audioPlayer.outputDevice != null)
+            {
                 try
                 {
                     audioPlayer.outputDevice.Volume = volumeBar.Value / 20f;
+                    audioPlayer.volume = volumeBar.Value;
                 }
                 catch (NullReferenceException ex)
                 {
                     Debug.Print("changeVolume() exception :" + ex.ToString());
                 }
+            }
+            else
+            {
+                audioPlayer.volume = volumeBar.Value;
+            }
         }
 
         private void infoBtn_Click(object sender, EventArgs e)
         {
-            if(currentIndex >= 0)
+            if(playList.SelectedIndex >= 0)
             {
-                String filePath = filePaths[currentIndex];
+                String filePath = filePaths[playList.SelectedIndex];
 
                 TagLib.File file = TagLib.File.Create(@filePath);
 
                 String[] info = new string[10];
+                info[0] = getFilePath(filePath, 2);
                 info[1] = file.Tag.Title;
                 info[2] = file.Tag.JoinedPerformers;
                 info[3] = file.Tag.Album;

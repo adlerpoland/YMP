@@ -65,7 +65,7 @@
             this.listView.Location = new System.Drawing.Point(12, 12);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(260, 237);
+            this.listView.Size = new System.Drawing.Size(260, 277);
             this.listView.TabIndex = 0;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -83,7 +83,7 @@
             // closeBtn
             // 
             this.closeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.closeBtn.Location = new System.Drawing.Point(197, 255);
+            this.closeBtn.Location = new System.Drawing.Point(197, 295);
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(75, 23);
             this.closeBtn.TabIndex = 1;
@@ -95,12 +95,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 281);
+            this.ClientSize = new System.Drawing.Size(284, 321);
             this.Controls.Add(this.closeBtn);
             this.Controls.Add(this.listView);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(300, 320);
+            this.MinimumSize = new System.Drawing.Size(300, 360);
             this.Name = "Info";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

@@ -25,6 +25,8 @@ namespace YourMusicPlayer
 
         public void setInfo(String[] data)
         {
+            this.Text = data[0];
+
             ListViewItem title = new ListViewItem();
             title.Group = listView.Groups[0];
             title.Text = "Title";
@@ -69,10 +71,10 @@ namespace YourMusicPlayer
             Duration.Group = listView.Groups[2];
             Duration.Text = "Duration";
             int seconds = 0;
-            Debug.Print(data[9].ToString());
+            //Debug.Print(data[9].ToString());
             if (Int32.TryParse(data[9], out seconds))
             {
-                Debug.Print(seconds.ToString());
+                //Debug.Print(seconds.ToString());
                 int minutes = (seconds - (seconds % 60)) / 60;
                 seconds = seconds % 60;
                 String sec;

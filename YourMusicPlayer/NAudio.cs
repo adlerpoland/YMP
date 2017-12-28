@@ -100,8 +100,6 @@ namespace YourMusicPlayer
                 audioFile = null;
                 return false;
             }
-            //setLabel("");
-            //seekBar.Value = 0;
         }
 
         //Stop but start next song
@@ -131,8 +129,6 @@ namespace YourMusicPlayer
                 audioFile = null;
                 return false;
             }
-            //setLabel("");
-            //seekBar.Value = 0;
         }
 
         public bool playSound(String filePath)
@@ -153,22 +149,23 @@ namespace YourMusicPlayer
                     }
                     catch (FormatException)
                     {
-                        MessageBox.Show("Format exception, file not supported : ");
+                        MessageBox.Show("Format exception, file not supported!");
+                        return false;
                     }
-                   
                 }
                 try
                 {
                     outputDevice.Play();
+                    outputDevice.Volume = volume / 20f;
+                    //Debug.Print("VOLUME: " + (volume / 20f).ToString());
+                    PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
+                    return true;
                 }
                 catch (InvalidOperationException ex)
                 {
                     Debug.Print("playSound() InvalidOperationException : " + ex.ToString());
-
+                    return false;
                 }
-
-                PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-                return true;
             }
             return false;
         }
@@ -178,12 +175,9 @@ namespace YourMusicPlayer
             audioFile = new AudioFileReader(filePath);
             outputDevice.Init(audioFile);
             outputDevice.Play();
+            //Debug.Print("VOLUME FORCED: " + (volume / 20f).ToString());
+            outputDevice.Volume = volume / 20f;
             PlaybackStopType = PlaybackStopTypes.PlaybackStoppedReachingEndOfFile;
-        }
-
-        public void getSoundInfo()
-        {
-            //audioFile.
         }
     }
 }
