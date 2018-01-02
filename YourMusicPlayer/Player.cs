@@ -508,5 +508,38 @@ namespace YourMusicPlayer
                 infoForm.Show();
             }
         }
+
+        private void playList_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //ENTER KEY
+            if(e.KeyChar.Equals((char)13))
+            {
+                if (audioPlayer.playing)
+                {
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+                    audioPlayer.stopSound(filePath);
+                    setLabel(getFilePath(filePath, 2));
+                }
+                else
+                {
+                    audioPlayer.outputDevice?.Stop();
+                    audioPlayer.audioFile?.Dispose();
+                    audioPlayer.audioFile = null;
+                    audioPlayer.playing = true;
+                    String filePath = filePaths[playList.SelectedIndex];
+                    currentIndex = playList.SelectedIndex;
+                    if (audioPlayer.playSound(filePath))
+                        setLabel(getFilePath(filePath, 2));
+                }
+            }
+            //DELETE KEY
+            else if(e.KeyChar.Equals((Char)Keys.Delete))
+            {
+                // TO ADD REMOVE OPTION LATER
+                // REMOVE FROM filePaths
+                // REMOVE FROM list
+            }
+        }
     }
 }
