@@ -48,7 +48,7 @@
             // prevBtn
             // 
             this.prevBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.prevBtn.Location = new System.Drawing.Point(54, 319);
+            this.prevBtn.Location = new System.Drawing.Point(54, 432);
             this.prevBtn.Name = "prevBtn";
             this.prevBtn.Size = new System.Drawing.Size(45, 30);
             this.prevBtn.TabIndex = 8;
@@ -59,7 +59,7 @@
             // nextBtn
             // 
             this.nextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.nextBtn.Location = new System.Drawing.Point(237, 319);
+            this.nextBtn.Location = new System.Drawing.Point(245, 432);
             this.nextBtn.Name = "nextBtn";
             this.nextBtn.Size = new System.Drawing.Size(45, 30);
             this.nextBtn.TabIndex = 11;
@@ -70,7 +70,7 @@
             // playBtn
             // 
             this.playBtn.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.playBtn.Location = new System.Drawing.Point(171, 319);
+            this.playBtn.Location = new System.Drawing.Point(175, 432);
             this.playBtn.Name = "playBtn";
             this.playBtn.Size = new System.Drawing.Size(60, 30);
             this.playBtn.TabIndex = 10;
@@ -86,7 +86,7 @@
             this.playList.FormattingEnabled = true;
             this.playList.Location = new System.Drawing.Point(12, 47);
             this.playList.Name = "playList";
-            this.playList.Size = new System.Drawing.Size(372, 186);
+            this.playList.Size = new System.Drawing.Size(380, 290);
             this.playList.TabIndex = 5;
             this.playList.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.playList_KeyPress);
             this.playList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseDoubleClick);
@@ -104,7 +104,7 @@
             // stopBtn
             // 
             this.stopBtn.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.stopBtn.Location = new System.Drawing.Point(105, 319);
+            this.stopBtn.Location = new System.Drawing.Point(109, 432);
             this.stopBtn.Name = "stopBtn";
             this.stopBtn.Size = new System.Drawing.Size(60, 30);
             this.stopBtn.TabIndex = 9;
@@ -116,9 +116,9 @@
             // 
             this.playLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.playLabel.Location = new System.Drawing.Point(12, 241);
+            this.playLabel.Location = new System.Drawing.Point(12, 354);
             this.playLabel.Name = "playLabel";
-            this.playLabel.Size = new System.Drawing.Size(321, 20);
+            this.playLabel.Size = new System.Drawing.Size(329, 20);
             this.playLabel.TabIndex = 13;
             this.playLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -126,7 +126,7 @@
             // 
             this.continueBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.continueBtn.BackColor = System.Drawing.SystemColors.Control;
-            this.continueBtn.Location = new System.Drawing.Point(355, 12);
+            this.continueBtn.Location = new System.Drawing.Point(363, 12);
             this.continueBtn.Name = "continueBtn";
             this.continueBtn.Size = new System.Drawing.Size(29, 29);
             this.continueBtn.TabIndex = 3;
@@ -137,7 +137,7 @@
             // shuffleBtn
             // 
             this.shuffleBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.shuffleBtn.Location = new System.Drawing.Point(320, 12);
+            this.shuffleBtn.Location = new System.Drawing.Point(328, 12);
             this.shuffleBtn.Name = "shuffleBtn";
             this.shuffleBtn.Size = new System.Drawing.Size(29, 29);
             this.shuffleBtn.TabIndex = 2;
@@ -148,7 +148,8 @@
             // timeLabel
             // 
             this.timeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.timeLabel.Location = new System.Drawing.Point(288, 324);
+            this.timeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.timeLabel.Location = new System.Drawing.Point(296, 437);
             this.timeLabel.Name = "timeLabel";
             this.timeLabel.Size = new System.Drawing.Size(45, 20);
             this.timeLabel.TabIndex = 14;
@@ -159,10 +160,10 @@
             // 
             this.seekBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.seekBar.Location = new System.Drawing.Point(15, 264);
+            this.seekBar.Location = new System.Drawing.Point(15, 377);
             this.seekBar.Maximum = 1000;
             this.seekBar.Name = "seekBar";
-            this.seekBar.Size = new System.Drawing.Size(318, 45);
+            this.seekBar.Size = new System.Drawing.Size(326, 45);
             this.seekBar.TabIndex = 6;
             this.seekBar.MouseCaptureChanged += new System.EventHandler(this.seekBar_MouseCaptureChanged);
             this.seekBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
@@ -172,7 +173,7 @@
             // volumeBar
             // 
             this.volumeBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.volumeBar.Location = new System.Drawing.Point(339, 239);
+            this.volumeBar.Location = new System.Drawing.Point(347, 352);
             this.volumeBar.Maximum = 20;
             this.volumeBar.Name = "volumeBar";
             this.volumeBar.Orientation = System.Windows.Forms.Orientation.Vertical;
@@ -184,7 +185,7 @@
             // infoBtn
             // 
             this.infoBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.infoBtn.Location = new System.Drawing.Point(12, 319);
+            this.infoBtn.Location = new System.Drawing.Point(12, 432);
             this.infoBtn.Name = "infoBtn";
             this.infoBtn.Size = new System.Drawing.Size(35, 30);
             this.infoBtn.TabIndex = 7;
@@ -196,7 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(396, 361);
+            this.ClientSize = new System.Drawing.Size(404, 474);
             this.Controls.Add(this.infoBtn);
             this.Controls.Add(this.volumeBar);
             this.Controls.Add(this.seekBar);
@@ -210,9 +211,9 @@
             this.Controls.Add(this.playBtn);
             this.Controls.Add(this.nextBtn);
             this.Controls.Add(this.prevBtn);
-            this.MinimumSize = new System.Drawing.Size(412, 400);
+            this.MinimumSize = new System.Drawing.Size(420, 513);
             this.Name = "Player";
-            this.Text = "Your Music Player 1";
+            this.Text = "Your Music Player";
             ((System.ComponentModel.ISupportInitialize)(this.seekBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeBar)).EndInit();
             this.ResumeLayout(false);

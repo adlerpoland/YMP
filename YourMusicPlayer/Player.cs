@@ -14,6 +14,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.Threading;
 using System.Timers;
+using System.Drawing.Drawing2D;
 
 namespace YourMusicPlayer
 {
@@ -30,6 +31,8 @@ namespace YourMusicPlayer
 
         Random ran;
 
+        Bitmap renderBmp;
+
         public Player()
         {
             CheckForIllegalCrossThreadCalls = false;
@@ -37,6 +40,7 @@ namespace YourMusicPlayer
             InitializeTimers();
             ran = new Random((int)System.DateTime.Now.Ticks);
         }
+
 
         private void InitializeTimers()
         {
@@ -75,6 +79,7 @@ namespace YourMusicPlayer
                         if (audioPlayer.playSound(filePath))
                             setLabel(getFilePath(filePath, 2));
                     }
+                    loadMetaPicture(filePaths[playList.SelectedIndex]);
                 }
 
                 
@@ -214,7 +219,10 @@ namespace YourMusicPlayer
                     {
                         String name = filePath;
                         if (audioPlayer.audioFile.FileName.Equals(name))
-                            setLabel(getFilePath(name,2));
+                        {
+                            setLabel(getFilePath(name, 2));
+                            loadMetaPicture(filePath);
+                        }
                     }    
                 }
                 else
@@ -222,6 +230,34 @@ namespace YourMusicPlayer
                     playBtn.Text = "Play";
                     audioPlayer.outputDevice.Pause();
                 }
+            }
+        }
+
+        private void loadMetaPicture(String filePath)
+        {
+            TagLib.File file = TagLib.File.Create(@filePath);
+
+            if (file.Tag.Pictures.Length > 0)
+            {
+                MemoryStream ms = new MemoryStream(file.Tag.Pictures[0].Data.Data);
+                System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+
+                Bitmap newImage = new Bitmap(512, 512, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+                using (Graphics gr = Graphics.FromImage(newImage))
+                {
+                    gr.SmoothingMode = SmoothingMode.HighSpeed;
+                    gr.InterpolationMode = InterpolationMode.Default;
+                    gr.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+                    gr.DrawImage(image, new Rectangle(0, 0, 512, 512));
+                    gr.Dispose();
+                }
+
+                this.BackgroundImage = newImage;
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            else
+            {
+                this.BackgroundImage = null;
             }
         }
 
@@ -306,6 +342,7 @@ namespace YourMusicPlayer
                         currentIndex = playList.SelectedIndex;
                         audioPlayer.stopSound(filePath);
                         setLabel(getFilePath(filePath, 2));
+                        loadMetaPicture(filePaths[playList.SelectedIndex]);
                     }
                     else
                     {
@@ -329,6 +366,7 @@ namespace YourMusicPlayer
                         currentIndex = playList.SelectedIndex;
                         audioPlayer.stopSound(filePath);
                         setLabel(getFilePath(filePath, 2));
+                        loadMetaPicture(filePaths[playList.SelectedIndex]);
                     }
                     else
                     {
@@ -368,6 +406,7 @@ namespace YourMusicPlayer
                     currentIndex = playList.SelectedIndex;
                     audioPlayer.stopSound(filePath);
                     setLabel(getFilePath(filePath, 2));
+                    loadMetaPicture(filePaths[playList.SelectedIndex]);
                 }
                 else
                 {
