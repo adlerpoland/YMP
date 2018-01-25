@@ -2,6 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/YourMusicPlayer/bin/Debug
-/YourMusicPlayer/obj/Debug
+/YourMusicPlayer/bin
+/YourMusicPlayer/obj
 .vs/
